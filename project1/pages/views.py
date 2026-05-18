@@ -1,4 +1,5 @@
 from django.http import HttpResponse
 
+
 def home_page_view(request):
-    return HttpResponse("Hello, World! This is the home page.")
+    return HttpResponse("Halo, ini halaman utama Django saya")
