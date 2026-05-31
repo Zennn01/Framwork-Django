@@ -1,5 +1,7 @@
 # Virtual Environment
+.venv
 .venv/
+project1/.venv
 venv/
 
 # Python cache
@@ -8,10 +10,17 @@ __pycache__/
 
 # Django
 db.sqlite3
+*.sqlite3
+*.sqlite3-journal
 *.log
 
 # Environment variables
 .env
+.env.*
+.envrc
+
+# Local-only settings
+local_settings.py
 
 # Static/media generated
 media/
