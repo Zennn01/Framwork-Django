@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiket.com Prototype</title>
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="{% static 'css/reset.css' %}">
+    <link rel="stylesheet" href="{% static 'css/variables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/hero.css' %}">
+    <link rel="stylesheet" href="{% static 'css/category.css' %}">
+    <link rel="stylesheet" href="{% static 'css/slider.css' %}">
+    <link rel="stylesheet" href="{% static 'css/card.css' %}">
+    <link rel="stylesheet" href="{% static 'css/footer.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="#" class="navbar-brand">
+                <i class="fa-solid fa-hotel"></i> Tikety
+            </a>
+            
+            <div class="navbar-menu">
+                <a href="{% url 'hotels' %}">Hotel & Penginapan</a>
+                <a href="{% url 'travel' %}">Travel & Penjemputan</a>
+            </div>
+            
+            <div class="navbar-actions">
+                <div class="nav-search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Cari aktivitas...">
+                </div>
+                {% if user.is_authenticated %}
+                <span style="font-size:14px;color:#555;font-weight:600;">Hai, {{ user.username }}!</span>
+                <a href="{% url 'logout' %}" class="btn btn-outline">Keluar</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn btn-outline">Masuk</a>
+                <a href="{% url 'register' %}" class="btn btn-primary">Daftar</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <h1 class="hero-title">Hey, mau ke mana?</h1>
+            <p class="hero-subtitle">Eksplorasi destinasi impian dengan penawaran terbaik</p>
+            
+            <div class="search-widget">
+                <!-- Hotel Search Form -->
+                <div id="form-hotel" class="search-form active">
+                    <div class="search-fields-container">
+                        <div class="search-field">
+                            <label>Tujuan</label>
+                            <input type="text" placeholder="Mau menginap di mana?">
+                        </div>
+                        <div class="search-field">
+                            <label>Tanggal</label>
+                            <input type="text" placeholder="Pilih tanggal">
+                        </div>
+                        <div class="search-field">
+                            <label>Tamu & Kamar</label>
+                            <input type="text" placeholder="1 Tamu, 1 Kamar">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary">Cari Hotel</button>
+                </div>
+
+                <!-- Travel Search Form -->
+                <div id="form-travel" class="search-form">
+                    <div class="search-fields-container">
+                        <div class="search-field">
+                            <label>Lokasi Jemput</label>
+                            <input type="text" placeholder="Bandara, stasiun, hotel...">
+                        </div>
+                        <div class="search-field">
+                            <label>Lokasi Tujuan</label>
+                            <input type="text" placeholder="Mau antar ke mana?">
+                        </div>
+                        <div class="search-field">
+                            <label>Tanggal & Waktu</label>
+                            <input type="text" placeholder="Pilih tanggal & jam">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary">Cari Travel</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="categories">
+        <div class="container">
+            <div class="category-list">
+                <div class="category-item active" data-tab="hotel" data-category="hotel">
+                    <i class="fa-solid fa-hotel"></i>
+                    <span>Hotels</span>
+                </div>
+                <div class="category-item" data-tab="hotel" data-category="villa">
+                    <i class="fa-solid fa-house-chimney"></i>
+                    <span>Villa & Resort</span>
+                </div>
+                <div class="category-item" data-tab="hotel" data-category="camping">
+                    <i class="fa-solid fa-campground"></i>
+                    <span>Camping</span>
+                </div>
+                <div class="category-item" data-tab="travel" data-category="travel">
+                    <i class="fa-solid fa-van-shuttle"></i>
+                    <span>Travel Jemput</span>
+                </div>
+                <div class="category-item" data-tab="travel" data-category="mobil">
+                    <i class="fa-solid fa-car"></i>
+                    <span>Sewa Mobil</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Hotels Section -->
+    <section id="section-hotel" class="section-slider">
+        <div class="container">
+            <div class="slider-header">
+                <div>
+                    <h2 class="section-title">Hotel Populer Sekarang</h2>
+                    <p class="section-subtitle">Pilihan populer traveler bulan ini</p>
+                </div>
+                <div class="slider-nav">
+                    <button class="slider-btn btn-prev"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button class="slider-btn btn-next"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <div class="slider-container">
+                <div class="slider-track">
+                    
+                    {% if hotels %}
+                        {% for hotel in hotels %}
+                        <div class="card" data-category="{{ hotel.category }}">
+                            <div class="card-image" style="cursor: pointer;" onclick="window.location.href='{% url 'detail' hotel.category hotel.id %}'">
+                                {% if hotel.image %}
+                                <img src="{{ hotel.image.url }}" alt="{{ hotel.name }}">
+                                {% elif hotel.category == 'villa' %}
+                                <img src="https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="{{ hotel.name }}">
+                                {% elif hotel.category == 'camping' %}
+                                <img src="https://images.unsplash.com/photo-1504280387797-e8185c8e415b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="{{ hotel.name }}">
+                                {% else %}
+                                <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="{{ hotel.name }}">
+                                {% endif %}
+                                {% if hotel.badge %}
+                                <span class="card-badge">{{ hotel.badge }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="card-body">
+                                <div class="card-stars">
+                                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                                </div>
+                                <h3 class="card-title"><a href="{% url 'detail' hotel.category hotel.id %}" style="color:inherit; text-decoration:none;">{{ hotel.name }}</a></h3>
+                                <div class="card-location">
+                                    <i class="fa-solid fa-location-dot"></i> {{ hotel.location }}
+                                </div>
+                                <div class="card-rating">
+                                    <span class="rating-score">{{ hotel.rating_score }}/5</span>
+                                    <span class="rating-text">{{ hotel.rating_text }}</span>
+                                    <span class="rating-count">({{ hotel.review_count }} ulasan)</span>
+                                </div>
+                                <div class="card-price-section">
+                                    {% if hotel.old_price %}
+                                    <div class="old-price">Rp {{ hotel.old_price }}</div>
+                                    {% endif %}
+                                    <div class="new-price">Rp {{ hotel.new_price }}</div>
+                                    <div class="price-tax">Termasuk pajak</div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <!-- Fallback template when db is empty -->
+                        <div class="card">
+                            <div class="card-image">
+                                <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Hotel Indonesia">
+                                <span class="card-badge">-40%</span>
+                            </div>
+                            <div class="card-body">
+                                <h3 class="card-title">Tambahkan Hotel di Admin Panel</h3>
+                                <div class="card-location">
+                                    <i class="fa-solid fa-location-dot"></i> Database masih kosong
+                                </div>
+                                <div class="card-price-section">
+                                    <div class="new-price">Rp 0</div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Travel Section -->
+    <section id="section-travel" class="section-slider">
+        <div class="container">
+            <div class="slider-header">
+                <div>
+                    <h2 class="section-title">Travel & Sewa Mobil</h2>
+                    <p class="section-subtitle">Temukan shuttle dan rental mobil dengan harga terbaik</p>
+                </div>
+                <div class="slider-nav">
+                    <button class="slider-btn btn-prev"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button class="slider-btn btn-next"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <div class="slider-container">
+                <div class="slider-track">
+                    
+                    {% if travels %}
+                        {% for travel in travels %}
+                        <div class="card" data-category="{{ travel.category }}">
+                            <div class="card-image">
+                                {% if travel.image %}
+                                <img src="{{ travel.image.url }}" alt="{{ travel.name }}">
+                                {% else %}
+                                <img src="https://images.unsplash.com/photo-1549601358-1110995738ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="{{ travel.name }}">
+                                {% endif %}
+                                {% if travel.badge %}
+                                <span class="card-badge" style="background:#1a7a4a;">{{ travel.badge }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="card-body">
+                                <h3 class="card-title" style="font-size:16px;">{{ travel.name }}</h3>
+                                <div class="card-location">
+                                    <i class="fa-solid fa-map-pin"></i> {{ travel.departure }} <i class="fa-solid fa-arrow-right" style="font-size:10px;margin:0 4px;"></i> {{ travel.destination }}
+                                </div>
+                                <div class="card-price-section">
+                                    <div class="new-price" style="color:#1a7a4a;">Rp {{ travel.price }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p style="color:#aaa;text-align:center;padding:40px;">Belum ada layanan travel. Tambahkan di Admin panel.</p>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3 style="color: #fff; font-size: 24px; font-weight: 800; margin-bottom: 16px;"><i class="fa-solid fa-hotel"></i> Tikety</h3>
+                    <p>Pesan Hotel, Villa, dan Travel Penjemputan terbaikmu di satu tempat dengan layanan nyaman dan terpercaya.</p>
+                </div>
+                
+                <div class="footer-links">
+                    <div class="footer-col">
+                        <h4>Perusahaan</h4>
+                        <ul>
+                            <li><a href="#">Tentang Kami</a></li>
+                            <li><a href="#">Karir</a></li>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">Kebijakan Privasi</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Produk</h4>
+                        <ul>
+                            <li><a href="#">Hotel & Resort</a></li>
+                            <li><a href="#">Villa & Camping</a></li>
+                            <li><a href="#">Travel Penjemputan</a></li>
+                            <li><a href="#">Sewa Mobil</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Dukungan</h4>
+                        <ul>
+                            <li><a href="#">Pusat Bantuan</a></li>
+                            <li><a href="#">Hubungi Kami</a></li>
+                            <li><a href="#">Cara Pesan</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="copyright">
+                    &copy; 2026 Tikety.com. All rights reserved.
+                </div>
+                <div class="footer-social">
+                    <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{% static 'js/slider.js' %}?v=1.3"></script>
+    <script src="{% static 'js/tabs.js' %}?v=1.3"></script>
+    <script src="{% static 'js/animation.js' %}?v=1.3"></script>
+    <script src="{% static 'js/app.js' %}?v=1.3"></script>
+</body>
+</html>

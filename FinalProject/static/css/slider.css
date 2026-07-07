@@ -1,0 +1,82 @@
+/* slider.css */
+.section-slider {
+    padding: var(--space-xl) 0;
+    position: relative;
+}
+
+.slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: var(--space-xl);
+}
+
+.slider-nav {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.slider-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--bg-white);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+}
+
+.slider-btn:hover {
+    background-color: var(--primary-color);
+    color: var(--bg-white);
+    transform: scale(1.05);
+}
+
+.slider-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.slider-btn:disabled:hover {
+    background-color: var(--bg-white);
+    color: var(--text-primary);
+    transform: none;
+}
+
+.slider-container {
+    overflow: hidden;
+    margin: 0 calc(var(--space-md) * -1); /* Negative margin to hide scrollbar on edges but show cards */
+    padding: var(--space-sm) var(--space-md);
+}
+
+.slider-track {
+    display: flex;
+    gap: var(--space-lg);
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    /* For touch devices */
+    scroll-behavior: smooth;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none; /* Firefox */
+}
+
+.slider-track::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+}
+
+/* Mouse drag specific class */
+.slider-track.dragging {
+    scroll-behavior: auto;
+    cursor: grab;
+}
+
+.slider-track.dragging * {
+    pointer-events: none;
+}
+
+.slider-track.dragging:active {
+    cursor: grabbing;
+}

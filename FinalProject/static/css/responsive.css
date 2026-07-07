@@ -1,0 +1,86 @@
+/* responsive.css */
+
+/* Laptop (max 1024px) */
+@media (max-width: 1024px) {
+    .card {
+        flex: 0 0 calc(25% - (var(--space-lg) * 3 / 4)); /* 4 cards */
+    }
+}
+
+/* Tablet (max 768px) */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 36px;
+    }
+    
+    .search-form {
+        flex-direction: column;
+    }
+    
+    .search-fields-container {
+        flex-direction: column;
+        width: 100%;
+        gap: 0;
+    }
+    
+    .search-field {
+        width: 100%;
+        border-right: none !important;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .search-fields-container .search-field:last-child {
+        border-bottom: none;
+    }
+    
+    .search-form .btn-primary {
+        width: 100%;
+        margin-top: var(--space-md);
+    }
+
+    .card {
+        flex: 0 0 calc(50% - (var(--space-lg) * 1 / 2)); /* 2 cards */
+    }
+
+    .navbar-menu, .nav-search {
+        display: none; /* simple hidden on mobile for now */
+    }
+    
+    .footer-content {
+        flex-direction: column;
+    }
+}
+
+/* Mobile (max 480px) */
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 28px;
+    }
+
+    .card {
+        flex: 0 0 100%; /* 1 card */
+    }
+
+    .category-list {
+        gap: var(--space-sm);
+    }
+    
+    .category-item {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .category-item i {
+        font-size: 20px;
+    }
+    
+    .category-item span {
+        font-size: 10px;
+    }
+    
+    .footer-bottom {
+        flex-direction: column;
+        gap: var(--space-md);
+        text-align: center;
+    }
+}

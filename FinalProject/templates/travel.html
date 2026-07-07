@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel & Penjemputan — Tikety</title>
+    <meta name="description" content="Pesan shuttle, travel jemput, dan sewa mobil untuk perjalananmu dengan harga terbaik.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/reset.css' %}">
+    <link rel="stylesheet" href="{% static 'css/variables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/footer.css' %}">
+    <style>
+        body { background: #f0f4f8; }
+
+        .page-header {
+            background: linear-gradient(135deg, #1a7a4a 0%, #0d4a2e 100%);
+            padding: 120px 0 60px;
+            color: #fff;
+        }
+        .page-header .container { max-width: 95%; padding: 0 var(--space-lg); }
+        .page-header h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+        .page-header p  { font-size: 15px; opacity: .75; }
+
+        .listing-search {
+            background: #fff; border-radius: 16px; padding: 20px 24px;
+            display: flex; gap: 12px; align-items: center;
+            margin-top: 28px; box-shadow: 0 8px 32px rgba(0,0,0,.12); flex-wrap: wrap;
+        }
+        .s-field { flex: 1; min-width: 160px; display: flex; flex-direction: column; gap: 4px; }
+        .s-field label { font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .06em; }
+        .s-field input { border: none; outline: none; font-size: 15px; font-family: inherit; color: #111; background: none; }
+        .s-divider { width: 1px; height: 36px; background: #e8eaed; }
+        .btn-search { background: #1a7a4a; color: #fff; border: none; border-radius: 10px; padding: 12px 24px; font-weight: 700; font-size: 14px; cursor: pointer; white-space: nowrap; transition: all .2s; }
+        .btn-search:hover { background: #155e3a; transform: translateY(-1px); }
+
+        .listing-layout { display: grid; grid-template-columns: 240px 1fr; gap: 24px; max-width: 95%; margin: 32px auto; padding: 0 var(--space-lg); }
+
+        /* Sidebar */
+        .filter-sidebar { display: flex; flex-direction: column; gap: 16px; }
+        .filter-panel { background: #fff; border-radius: 14px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+        .filter-panel h3 { font-size: 14px; font-weight: 700; color: #111; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #f0f0f0; }
+        .filter-option { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; cursor: pointer; }
+        .filter-option input[type=checkbox] { width: 16px; height: 16px; accent-color: #1a7a4a; }
+        .filter-option label { font-size: 14px; color: #444; cursor: pointer; flex: 1; }
+        .filter-option .filter-count { font-size: 12px; color: #aaa; }
+        .btn-reset { width: 100%; background: none; border: 1px solid #e8eaed; border-radius: 8px; padding: 8px; font-size: 13px; color: #666; cursor: pointer; margin-top: 8px; }
+
+        /* Type Tabs - horizontal tabs for shuttle/car */
+        .service-tabs { display: flex; background: #fff; border-radius: 14px; padding: 6px; gap: 4px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+        .s-tab { flex: 1; text-align: center; padding: 10px; border-radius: 10px; font-size: 14px; font-weight: 600; color: #666; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .s-tab.active { background: #1a7a4a; color: #fff; }
+        .s-tab:hover:not(.active) { background: #f0f4f8; }
+
+        /* Route Card */
+        .routes-list { display: flex; flex-direction: column; gap: 16px; }
+        .route-card {
+            background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.07);
+            display: flex; overflow: hidden; cursor: pointer;
+            transition: box-shadow .2s, transform .2s; text-decoration: none; color: inherit;
+        }
+        .route-card:hover { box-shadow: 0 8px 32px rgba(26,122,74,.15); transform: translateY(-2px); }
+        .route-card-img { width: 220px; min-height: 160px; flex-shrink: 0; overflow: hidden; position: relative; }
+        .route-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
+        .route-card:hover .route-card-img img { transform: scale(1.05); }
+        .rc-badge { position: absolute; top: 10px; left: 10px; background: #1a7a4a; color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+        .route-card-body { padding: 18px 20px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+
+        .rc-route { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .rc-route .city { font-size: 16px; font-weight: 700; color: #111; }
+        .rc-route .arrow { color: #1a7a4a; font-size: 14px; }
+        .rc-title { font-size: 14px; color: #666; margin-bottom: 8px; }
+        .rc-features { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+        .rc-feature { padding: 3px 10px; background: #f0f9f4; border-radius: 20px; font-size: 11px; color: #1a7a4a; font-weight: 600; }
+
+        .rc-bottom { display: flex; justify-content: space-between; align-items: flex-end; }
+        .rc-rating { display: flex; align-items: center; gap: 6px; }
+        .rc-score { background: #1a7a4a; color: #fff; font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 7px; }
+        .rc-rating-text { font-size: 13px; color: #555; }
+        .rc-price { text-align: right; }
+        .rc-price .old { font-size: 11px; color: #aaa; text-decoration: line-through; }
+        .rc-price .new { font-size: 20px; font-weight: 800; color: #1a7a4a; }
+        .rc-price .per { font-size: 11px; color: #999; }
+
+        .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .results-count { font-size: 15px; color: #555; }
+        .results-count strong { color: #111; }
+        .sort-select { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #e8eaed; border-radius: 10px; padding: 8px 14px; }
+        .sort-select select { border: none; outline: none; font-size: 14px; color: #333; background: none; cursor: pointer; }
+
+        @media (max-width: 900px) {
+            .listing-layout { grid-template-columns: 1fr; }
+            .filter-sidebar { display: none; }
+            .route-card-img { width: 140px; }
+        }
+        @media (max-width: 600px) {
+            .route-card { flex-direction: column; }
+            .route-card-img { width: 100%; height: 180px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar scrolled" style="background:rgba(255,255,255,.97) !important;">
+        <div class="container">
+            <a href="{% url 'home' %}" class="navbar-brand" style="color:var(--primary-color);">
+                <i class="fa-solid fa-hotel"></i> Tikety
+            </a>
+            <div class="navbar-menu">
+                <a href="{% url 'hotels' %}">Hotel & Penginapan</a>
+                <a href="{% url 'travel' %}" style="color:#1a7a4a;">Travel & Penjemputan</a>
+            </div>
+            <div class="navbar-actions">
+                <button class="btn btn-outline">Masuk</button>
+                <button class="btn btn-primary">Daftar</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <div class="page-header">
+        <div class="container">
+            <h1>Travel & Penjemputan</h1>
+            <p>Shuttle antar kota, airport transfer, dan sewa mobil di seluruh Indonesia</p>
+            <div class="listing-search">
+                <div class="s-field">
+                    <label>Lokasi Jemput</label>
+                    <input type="text" placeholder="Bandara, stasiun, hotel...">
+                </div>
+                <div class="s-divider"></div>
+                <div class="s-field">
+                    <label>Lokasi Tujuan</label>
+                    <input type="text" placeholder="Mau antar ke mana?">
+                </div>
+                <div class="s-divider"></div>
+                <div class="s-field">
+                    <label>Tanggal & Waktu</label>
+                    <input type="text" placeholder="Pilih tanggal & jam">
+                </div>
+                <div class="s-divider"></div>
+                <div class="s-field">
+                    <label>Penumpang</label>
+                    <input type="text" placeholder="1 Penumpang">
+                </div>
+                <button class="btn-search"><i class="fa-solid fa-magnifying-glass"></i> Cari</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Listing Layout -->
+    <div class="listing-layout">
+
+        <!-- Sidebar -->
+        <aside class="filter-sidebar">
+            <div class="filter-panel">
+                <h3>Tipe Layanan</h3>
+                <div class="filter-option"><input type="checkbox" id="t_shuttle" checked><label for="t_shuttle">Shuttle Antar Kota</label><span class="filter-count">12</span></div>
+                <div class="filter-option"><input type="checkbox" id="t_airport"><label for="t_airport">Airport Transfer</label><span class="filter-count">8</span></div>
+                <div class="filter-option"><input type="checkbox" id="t_car"><label for="t_car">Sewa Mobil</label><span class="filter-count">24</span></div>
+                <div class="filter-option"><input type="checkbox" id="t_private"><label for="t_private">Private Driver</label><span class="filter-count">6</span></div>
+            </div>
+            <div class="filter-panel">
+                <h3>Kapasitas</h3>
+                <div class="filter-option"><input type="checkbox" id="c4"><label for="c4">1–4 Orang</label></div>
+                <div class="filter-option"><input type="checkbox" id="c8"><label for="c8">5–8 Orang</label></div>
+                <div class="filter-option"><input type="checkbox" id="c15"><label for="c15">9–15 Orang</label></div>
+            </div>
+            <div class="filter-panel">
+                <h3>Fasilitas Kendaraan</h3>
+                <div class="filter-option"><input type="checkbox" id="fac_ac"><label for="fac_ac">Full AC</label></div>
+                <div class="filter-option"><input type="checkbox" id="fac_reclining"><label for="fac_reclining">Kursi Reclining</label></div>
+                <div class="filter-option"><input type="checkbox" id="fac_wifi"><label for="fac_wifi">WiFi On-board</label></div>
+                <div class="filter-option"><input type="checkbox" id="fac_snack"><label for="fac_snack">Snack Included</label></div>
+                <button class="btn-reset">Reset Filter</button>
+            </div>
+        </aside>
+
+        <!-- Results -->
+        <div>
+            <!-- Service Type Tabs -->
+            <div class="service-tabs">
+                <div class="s-tab active" onclick="switchTab(this,'travel')"><i class="fa-solid fa-van-shuttle"></i> Travel Jemput</div>
+                <div class="s-tab" onclick="switchTab(this,'mobil')"><i class="fa-solid fa-car"></i> Sewa Mobil</div>
+            </div>
+
+            <div class="results-header">
+                <div class="results-count">Menampilkan <strong>{{ travels|length }}</strong> layanan tersedia</div>
+            </div>
+
+            <div class="routes-list">
+                {% for travel in travels %}
+                <div class="route-card" data-category="{{ travel.category }}">
+                    <div class="route-card-img">
+                        {% if travel.image %}
+                        <img src="{{ travel.image.url }}" alt="{{ travel.name }}" loading="lazy">
+                        {% else %}
+                        <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="{{ travel.name }}" loading="lazy">
+                        {% endif %}
+                        {% if travel.badge %}<div class="rc-badge">{{ travel.badge }}</div>{% endif %}
+                    </div>
+                    <div class="route-card-body">
+                        <div>
+                            <div class="rc-route">
+                                <span class="city">{{ travel.departure }}</span>
+                                {% if travel.destination %}
+                                <span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>
+                                <span class="city">{{ travel.destination }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="rc-title">{{ travel.name }}</div>
+                            <div class="rc-features">
+                                <span class="rc-feature">Full AC</span>
+                                <span class="rc-feature">Door to Door</span>
+                                <span class="rc-feature">Snack</span>
+                            </div>
+                        </div>
+                        <div class="rc-bottom">
+                            <div class="rc-rating">
+                                <span class="rc-score">4.8</span>
+                                <div><div class="rc-rating-text">Excellent</div></div>
+                            </div>
+                            <div class="rc-price">
+                                <div class="new">Rp {{ travel.price }}</div>
+                                <div class="per">/ orang • termasuk pajak</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="color:#aaa;text-align:center;padding:40px;">Belum ada layanan travel. Tambahkan di Admin panel.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:32px;margin-bottom:32px;">
+                <div>
+                    <h3 style="color:#fff;font-size:22px;font-weight:800;margin-bottom:12px;"><i class="fa-solid fa-hotel"></i> Tikety</h3>
+                    <p style="color:rgba(255,255,255,.5);font-size:14px;max-width:260px;line-height:1.7;">Pesan Hotel, Villa, dan Travel terbaikmu di satu tempat.</p>
+                </div>
+                <div style="display:flex;gap:48px;flex-wrap:wrap;">
+                    <div><h4 style="color:rgba(255,255,255,.4);font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;">Produk</h4><ul style="list-style:none;"><li style="margin-bottom:8px;"><a href="{% url 'hotels' %}" style="color:rgba(255,255,255,.65);font-size:14px;text-decoration:none;">Hotel & Resort</a></li><li><a href="{% url 'travel' %}" style="color:rgba(255,255,255,.65);font-size:14px;text-decoration:none;">Travel & Sewa Mobil</a></li></ul></div>
+                    <div><h4 style="color:rgba(255,255,255,.4);font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;">Dukungan</h4><ul style="list-style:none;"><li style="margin-bottom:8px;"><a href="#" style="color:rgba(255,255,255,.65);font-size:14px;text-decoration:none;">Pusat Bantuan</a></li><li><a href="#" style="color:rgba(255,255,255,.65);font-size:14px;text-decoration:none;">Hubungi Kami</a></li></ul></div>
+                </div>
+            </div>
+            <div style="border-top:1px solid rgba(255,255,255,.08);padding-top:20px;display:flex;justify-content:space-between;align-items:center;">
+                <span style="color:rgba(255,255,255,.35);font-size:13px;">© 2026 Tikety.com. All rights reserved.</span>
+                <div style="display:flex;gap:10px;"><a href="#" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.08);display:inline-flex;align-items:center;justify-content:center;color:rgba(255,255,255,.55);font-size:14px;text-decoration:none;"><i class="fa-brands fa-instagram"></i></a></div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function switchTab(element, type) {
+            // Update active pill
+            document.querySelectorAll('.service-tabs .s-tab').forEach(p => p.classList.remove('active'));
+            element.classList.add('active');
+
+            // Map frontend type strings to backend category strings (they match already)
+            let catType = type;
+
+            // Filter cards
+            document.querySelectorAll('.route-card').forEach(card => {
+                if (type === 'all' || card.getAttribute('data-category') === catType) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

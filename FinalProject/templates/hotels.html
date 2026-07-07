@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel & Penginapan — Tikety</title>
+    <meta name="description" content="Temukan hotel, villa, dan spot camping terbaik di seluruh Indonesia dengan harga terjangkau.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/reset.css' %}">
+    <link rel="stylesheet" href="{% static 'css/variables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/footer.css' %}">
+    <style>
+        body { background: #f0f4f8; }
+
+        /* ── Page Header ── */
+        .page-header {
+            background: linear-gradient(135deg, #0064d2 0%, #00377a 100%);
+            padding: 120px 0 60px;
+            color: #fff;
+        }
+        .page-header .container { max-width: 95%; padding: 0 var(--space-lg); }
+        .page-header h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+        .page-header p  { font-size: 15px; opacity: .75; }
+
+        /* ── Search Bar in header ── */
+        .listing-search {
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px 24px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-top: 28px;
+            box-shadow: 0 8px 32px rgba(0,0,0,.12);
+            flex-wrap: wrap;
+        }
+        .listing-search .s-field { flex: 1; min-width: 160px; display: flex; flex-direction: column; gap: 4px; }
+        .listing-search .s-field label { font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .06em; }
+        .listing-search .s-field input { border: none; outline: none; font-size: 15px; font-family: inherit; color: #111; background: none; }
+        .listing-search .s-divider { width: 1px; height: 36px; background: #e8eaed; }
+        .listing-search .btn-search { background: #0064d2; color: #fff; border: none; border-radius: 10px; padding: 12px 24px; font-weight: 700; font-size: 14px; cursor: pointer; white-space: nowrap; transition: all .2s; }
+        .listing-search .btn-search:hover { background: #0052b3; transform: translateY(-1px); }
+
+        /* ── Layout ── */
+        .listing-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 24px;
+            max-width: 95%;
+            margin: 32px auto;
+            padding: 0 var(--space-lg);
+        }
+
+        /* ── Sidebar / Filters ── */
+        .filter-sidebar { display: flex; flex-direction: column; gap: 16px; }
+        .filter-panel {
+            background: #fff;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,.06);
+        }
+        .filter-panel h3 {
+            font-size: 14px; font-weight: 700; color: #111;
+            margin-bottom: 14px; padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .filter-option { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; cursor: pointer; }
+        .filter-option input[type=checkbox] { width: 16px; height: 16px; accent-color: #0064d2; cursor: pointer; }
+        .filter-option label { font-size: 14px; color: #444; cursor: pointer; flex: 1; }
+        .filter-option .filter-count { font-size: 12px; color: #aaa; }
+        .star-filter { display: flex; flex-direction: column; gap: 10px; }
+        .star-row { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        .star-row input[type=checkbox] { width: 16px; height: 16px; accent-color: #0064d2; }
+        .star-row .stars { color: #f5a623; font-size: 13px; display: flex; gap: 2px; }
+        .price-range { display: flex; flex-direction: column; gap: 10px; }
+        .price-range input[type=range] { accent-color: #0064d2; width: 100%; }
+        .price-labels { display: flex; justify-content: space-between; font-size: 12px; color: #666; }
+        .btn-reset { width: 100%; background: none; border: 1px solid #e8eaed; border-radius: 8px; padding: 8px; font-size: 13px; color: #666; cursor: pointer; transition: all .2s; }
+        .btn-reset:hover { border-color: #0064d2; color: #0064d2; }
+
+        /* ── Results Header ── */
+        .results-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 18px; flex-wrap: wrap; gap: 12px;
+        }
+        .results-count { font-size: 15px; color: #555; }
+        .results-count strong { color: #111; }
+        .sort-select {
+            display: flex; align-items: center; gap: 8px;
+            background: #fff; border: 1px solid #e8eaed; border-radius: 10px;
+            padding: 8px 14px; cursor: pointer;
+        }
+        .sort-select select { border: none; outline: none; font-size: 14px; color: #333; background: none; cursor: pointer; }
+
+        /* ── Type Filter Pills ── */
+        .type-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+        .pill {
+            padding: 7px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;
+            border: 1.5px solid #e8eaed; background: #fff; color: #555;
+            cursor: pointer; transition: all .2s;
+        }
+        .pill.active, .pill:hover { background: #0064d2; border-color: #0064d2; color: #fff; }
+
+        /* ── Hotel Cards Grid ── */
+        .hotels-grid { display: flex; flex-direction: column; gap: 16px; }
+        .hotel-card {
+            background: #fff; border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,.07); overflow: hidden;
+            display: flex; cursor: pointer;
+            transition: box-shadow .2s, transform .2s;
+            text-decoration: none; color: inherit;
+        }
+        .hotel-card:hover { box-shadow: 0 8px 32px rgba(0,100,210,.13); transform: translateY(-2px); }
+        .hotel-card-img { width: 240px; min-height: 180px; flex-shrink: 0; overflow: hidden; position: relative; }
+        .hotel-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
+        .hotel-card:hover .hotel-card-img img { transform: scale(1.04); }
+        .hotel-card-img .hc-badge {
+            position: absolute; top: 12px; left: 12px;
+            background: #0064d2; color: #fff; font-size: 11px; font-weight: 700;
+            padding: 4px 10px; border-radius: 20px;
+        }
+        .hotel-card-body { padding: 20px 22px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .hc-top .hc-stars { color: #f5a623; font-size: 12px; display: flex; gap: 3px; margin-bottom: 6px; }
+        .hc-top h3 { font-size: 17px; font-weight: 700; color: #111; margin-bottom: 6px; line-height: 1.3; }
+        .hc-location { font-size: 13px; color: #777; display: flex; align-items: center; gap: 5px; margin-bottom: 10px; }
+        .hc-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+        .hc-tag { padding: 3px 10px; background: #f0f4f8; border-radius: 20px; font-size: 11px; color: #555; font-weight: 500; }
+        .hc-bottom { display: flex; align-items: flex-end; justify-content: space-between; }
+        .hc-rating { display: flex; align-items: center; gap: 8px; }
+        .hc-score { background: #0064d2; color: #fff; font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 8px; }
+        .hc-rating-text { font-size: 13px; font-weight: 600; color: #333; }
+        .hc-reviews { font-size: 12px; color: #999; }
+        .hc-price { text-align: right; }
+        .hc-price .old { font-size: 12px; color: #aaa; text-decoration: line-through; }
+        .hc-price .new { font-size: 20px; font-weight: 800; color: #0064d2; }
+        .hc-price .per { font-size: 11px; color: #999; }
+
+        /* ── Pagination ── */
+        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 32px; }
+        .page-btn {
+            width: 38px; height: 38px; border-radius: 8px; display: flex;
+            align-items: center; justify-content: center;
+            background: #fff; border: 1px solid #e8eaed;
+            font-size: 14px; font-weight: 600; color: #555; cursor: pointer;
+            transition: all .2s;
+        }
+        .page-btn.active, .page-btn:hover { background: #0064d2; border-color: #0064d2; color: #fff; }
+
+        @media (max-width: 900px) {
+            .listing-layout { grid-template-columns: 1fr; }
+            .filter-sidebar { display: none; }
+            .hotel-card-img { width: 140px; }
+        }
+        @media (max-width: 600px) {
+            .hotel-card { flex-direction: column; }
+            .hotel-card-img { width: 100%; height: 200px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar scrolled">
+        <div class="container">
+            <a href="{% url 'home' %}" class="navbar-brand" style="color:var(--primary-color);">
+                <i class="fa-solid fa-hotel"></i> Tikety
+            </a>
+            <div class="navbar-menu">
+                <a href="{% url 'hotels' %}" style="color:var(--primary-color);">Hotel & Penginapan</a>
+                <a href="{% url 'travel' %}">Travel & Penjemputan</a>
+            </div>
+            <div class="navbar-actions">
+                <button class="btn btn-outline">Masuk</button>
+                <button class="btn btn-primary">Daftar</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <h1>Hotel & Penginapan</h1>
+            <p>Temukan hotel, villa, dan spot camping terbaik di Indonesia</p>
+
+            <div class="listing-search">
+                <div class="s-field">
+                    <label>Destinasi</label>
+                    <input type="text" placeholder="Kota, hotel, atau landmark...">
+                </div>
+                <div class="s-divider"></div>
+                <div class="s-field">
+                    <label>Check-in</label>
+                    <input type="text" placeholder="Pilih tanggal">
+                </div>
+                <div class="s-divider"></div>
+                <div class="s-field">
+                    <label>Check-out</label>
+                    <input type="text" placeholder="Pilih tanggal">
+                </div>
+                <div class="s-divider"></div>
+                <div class="s-field">
+                    <label>Tamu & Kamar</label>
+                    <input type="text" placeholder="1 Tamu, 1 Kamar">
+                </div>
+                <button class="btn-search"><i class="fa-solid fa-magnifying-glass"></i> Cari</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Listing Layout -->
+    <div class="listing-layout">
+
+        <!-- Sidebar Filters -->
+        <aside class="filter-sidebar">
+            <div class="filter-panel">
+                <h3>Tipe Properti</h3>
+                <div class="filter-option"><input type="checkbox" id="t_hotel" checked><label for="t_hotel">Hotel</label><span class="filter-count">48</span></div>
+                <div class="filter-option"><input type="checkbox" id="t_villa"><label for="t_villa">Villa & Resort</label><span class="filter-count">23</span></div>
+                <div class="filter-option"><input type="checkbox" id="t_guest"><label for="t_guest">Camping</label><span class="filter-count">17</span></div>
+                <div class="filter-option"><input type="checkbox" id="t_hostel"><label for="t_hostel">Hostel</label><span class="filter-count">9</span></div>
+            </div>
+
+            <div class="filter-panel">
+                <h3>Bintang Hotel</h3>
+                <div class="star-filter">
+                    <div class="star-row"><input type="checkbox" id="s5"><div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div></div>
+                    <div class="star-row"><input type="checkbox" id="s4"><div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div></div>
+                    <div class="star-row"><input type="checkbox" id="s3"><div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div></div>
+                    <div class="star-row"><input type="checkbox" id="s2"><div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div></div>
+                </div>
+            </div>
+
+            <div class="filter-panel">
+                <h3>Harga Per Malam</h3>
+                <div class="price-range">
+                    <input type="range" min="100000" max="10000000" value="5000000" id="price-slider">
+                    <div class="price-labels"><span>Rp 100rb</span><span id="price-max-label">Rp 5jt</span></div>
+                </div>
+            </div>
+
+            <div class="filter-panel">
+                <h3>Fasilitas</h3>
+                <div class="filter-option"><input type="checkbox" id="f_pool"><label for="f_pool">Kolam Renang</label></div>
+                <div class="filter-option"><input type="checkbox" id="f_wifi"><label for="f_wifi">WiFi Gratis</label></div>
+                <div class="filter-option"><input type="checkbox" id="f_park"><label for="f_park">Parkir Gratis</label></div>
+                <div class="filter-option"><input type="checkbox" id="f_break"><label for="f_break">Sarapan Termasuk</label></div>
+                <div class="filter-option"><input type="checkbox" id="f_gym"><label for="f_gym">Gym & Fitness</label></div>
+                <div class="filter-option"><input type="checkbox" id="f_spa"><label for="f_spa">Spa</label></div>
+                <button class="btn-reset" style="margin-top:8px">Reset Filter</button>
+            </div>
+        </aside>
+
+        <!-- Results -->
+        <div>
+            <!-- Type Pills -->
+            <div class="type-pills">
+                <div class="pill active" onclick="filterType(this,'all')">Semua</div>
+                <div class="pill" onclick="filterType(this,'hotels')">Hotels</div>
+                <div class="pill" onclick="filterType(this,'villa')">Villa & Resort</div>
+                <div class="pill" onclick="filterType(this,'camping')">Camping</div>
+            </div>
+
+            <div class="results-header">
+                <div class="results-count">Menampilkan <strong>{{ hotels|length }}</strong> properti tersedia</div>
+            </div>
+
+            <div class="hotels-grid">
+                {% for hotel in hotels %}
+                <a href="{% url 'detail' hotel.category hotel.id %}" class="hotel-card" data-category="{{ hotel.category }}">
+                    <div class="hotel-card-img">
+                        {% if hotel.image %}
+                        <img src="{{ hotel.image.url }}" alt="{{ hotel.name }}" loading="lazy">
+                        {% elif hotel.category == 'villa' %}
+                        <img src="https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="{{ hotel.name }}" loading="lazy">
+                        {% elif hotel.category == 'camping' %}
+                        <img src="https://images.unsplash.com/photo-1504280387797-e8185c8e415b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="{{ hotel.name }}" loading="lazy">
+                        {% else %}
+                        <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="{{ hotel.name }}" loading="lazy">
+                        {% endif %}
+                        {% if hotel.badge %}<div class="hc-badge">{{ hotel.badge }}</div>{% endif %}
+                    </div>
+                    <div class="hotel-card-body">
+                        <div class="hc-top">
+                            <div class="hc-stars">
+                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                            </div>
+                            <h3>{{ hotel.name }}</h3>
+                            <div class="hc-location"><i class="fa-solid fa-location-dot"></i> {{ hotel.location }}</div>
+                            <div class="hc-tags">
+                                <span class="hc-tag">WiFi Gratis</span>
+                                <span class="hc-tag">AC</span>
+                                <span class="hc-tag">Parkir</span>
+                            </div>
+                        </div>
+                        <div class="hc-bottom">
+                            <div class="hc-rating">
+                                <span class="hc-score">{{ hotel.rating_score }}</span>
+                                <div>
+                                    <div class="hc-rating-text">{{ hotel.rating_text }}</div>
+                                    <div class="hc-reviews">({{ hotel.review_count }} ulasan)</div>
+                                </div>
+                            </div>
+                            <div class="hc-price">
+                                {% if hotel.old_price %}<div class="old">Rp {{ hotel.old_price }}</div>{% endif %}
+                                <div class="new">Rp {{ hotel.new_price }}</div>
+                                <div class="per">/ malam • termasuk pajak</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                {% empty %}
+                <p style="color:#aaa;text-align:center;padding:40px;">Belum ada hotel tersedia. Tambahkan di Admin panel.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:32px;margin-bottom:32px;">
+                <div>
+                    <h3 style="color:#fff;font-size:22px;font-weight:800;margin-bottom:12px;"><i class="fa-solid fa-hotel"></i> Tikety</h3>
+                    <p style="color:rgba(255,255,255,.5);font-size:14px;max-width:260px;line-height:1.7;">Pesan Hotel, Villa, dan Travel terbaikmu di satu tempat.</p>
+                </div>
+                <div style="display:flex;gap:48px;flex-wrap:wrap;">
+                    <div><h4 style="color:rgba(255,255,255,.4);font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;">Perusahaan</h4><ul style="list-style:none;"><li style="margin-bottom:8px;"><a href="#" style="color:rgba(255,255,255,.65);font-size:14px;text-decoration:none;">Tentang Kami</a></li><li style="margin-bottom:8px;"><a href="#" style="color:rgba(255,255,255,.65);font-size:14px;text-decoration:none;">Karir</a></li><li><a href="#" style="color:rgba(255,255,255,.65);font-size:14px;text-decoration:none;">Blog</a></li></ul></div>
+                    <div><h4 style="color:rgba(255,255,255,.4);font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;">Produk</h4><ul style="list-style:none;"><li style="margin-bottom:8px;"><a href="{% url 'hotels' %}" style="color:rgba(255,255,255,.65);font-size:14px;text-decoration:none;">Hotel & Resort</a></li><li style="margin-bottom:8px;"><a href="{% url 'hotels' %}" style="color:rgba(255,255,255,.65);font-size:14px;text-decoration:none;">Villa & Camping</a></li><li><a href="{% url 'travel' %}" style="color:rgba(255,255,255,.65);font-size:14px;text-decoration:none;">Travel & Sewa Mobil</a></li></ul></div>
+                </div>
+            </div>
+            <div style="border-top:1px solid rgba(255,255,255,.08);padding-top:20px;display:flex;justify-content:space-between;align-items:center;">
+                <span style="color:rgba(255,255,255,.35);font-size:13px;">© 2026 Tikety.com. All rights reserved.</span>
+                <div style="display:flex;gap:10px;">
+                    <a href="#" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.08);display:inline-flex;align-items:center;justify-content:center;color:rgba(255,255,255,.55);font-size:14px;text-decoration:none;"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="#" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.08);display:inline-flex;align-items:center;justify-content:center;color:rgba(255,255,255,.55);font-size:14px;text-decoration:none;"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.08);display:inline-flex;align-items:center;justify-content:center;color:rgba(255,255,255,.55);font-size:14px;text-decoration:none;"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Price range label
+        const slider = document.getElementById('price-slider');
+        if (slider) {
+            slider.addEventListener('input', () => {
+                const v = parseInt(slider.value);
+                document.getElementById('price-max-label').textContent = v >= 1000000 ? `Rp ${(v/1000000).toFixed(0)}jt` : `Rp ${v/1000}rb`;
+            });
+        }
+
+        // Filtering
+        function filterType(element, type) {
+            // Update active pill
+            document.querySelectorAll('.type-pills .pill').forEach(p => p.classList.remove('active'));
+            element.classList.add('active');
+
+            // Map frontend type strings to backend category strings
+            let catType = type;
+            if (type === 'hotels') catType = 'hotel';
+            if (type === 'guesthouse') catType = 'camping'; // safe fallback just in case
+
+            // Filter cards
+            document.querySelectorAll('.hotel-card').forEach(card => {
+                if (type === 'all' || card.getAttribute('data-category') === catType) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

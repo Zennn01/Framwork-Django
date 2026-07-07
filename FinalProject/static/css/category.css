@@ -1,0 +1,80 @@
+/* category.css */
+.categories {
+    margin-top: -40px; /* Overlap with hero */
+    position: relative;
+    z-index: 10;
+    padding-bottom: var(--space-2xl);
+}
+
+.category-list {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+    background: var(--bg-white);
+    padding: var(--space-md);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+}
+
+.category-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    width: 90px;
+    height: 90px;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+}
+
+.category-item i {
+    font-size: 28px;
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+}
+
+.category-item span {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+}
+
+.category-item:hover, .category-item.active {
+    background-color: rgba(0, 100, 210, 0.05);
+}
+
+.category-item:hover i, .category-item.active i {
+    color: var(--primary-color);
+}
+
+.category-item:hover span, .category-item.active span {
+    color: var(--primary-color);
+}
+
+/* Ripple effect */
+.category-item::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(0, 100, 210, 0.1);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: width 0.4s ease, height 0.4s ease, opacity 0.4s ease;
+}
+
+.category-item:active::after {
+    width: 200px;
+    height: 200px;
+    opacity: 1;
+    transition: 0s;
+}

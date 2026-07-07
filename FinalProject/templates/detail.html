@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Properti — Tikety</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/reset.css' %}">
+    <link rel="stylesheet" href="{% static 'css/variables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/footer.css' %}">
+    <style>
+        body { background: #f0f4f8; }
+
+        /* ── Gallery ── */
+        .gallery { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 280px 140px; gap: 8px; max-width: 95%; margin: 100px auto 0; padding: 0 var(--space-lg); border-radius: 20px; overflow: hidden; }
+        .gallery-main { grid-row: 1 / 3; position: relative; overflow: hidden; border-radius: 16px 0 0 16px; }
+        .gallery-main img { width: 100%; height: 100%; object-fit: cover; }
+        .gallery-sub { overflow: hidden; }
+        .gallery-sub img { width: 100%; height: 100%; object-fit: cover; }
+        .gallery-sub:first-of-type { border-radius: 0 16px 0 0; }
+        .gallery-sub:last-of-type { border-radius: 0 0 16px 0; position: relative; }
+        .gallery-more {
+            position: absolute; inset: 0; background: rgba(0,0,0,.55);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 16px; font-weight: 700; cursor: pointer;
+        }
+        @media (max-width:700px) {
+            .gallery { grid-template-columns: 1fr; grid-template-rows: 220px; margin-top: 80px; }
+            .gallery-main { border-radius: 12px; }
+            .gallery-sub { display: none; }
+        }
+
+        /* ── Detail Layout ── */
+        .detail-layout {
+            max-width: 95%; margin: 28px auto 48px;
+            display: grid; grid-template-columns: 1fr 340px; gap: 28px;
+            padding: 0 var(--space-lg);
+        }
+        @media (max-width:900px) { .detail-layout { grid-template-columns: 1fr; } }
+
+        /* ── LEFT COLUMN ── */
+
+        /* Info Block */
+        .info-block { background: #fff; border-radius: 16px; padding: 28px; box-shadow: 0 2px 12px rgba(0,0,0,.07); margin-bottom: 20px; }
+        .info-breadcrumb { font-size: 13px; color: #999; margin-bottom: 14px; }
+        .info-breadcrumb a { color: #0064d2; text-decoration: none; }
+        .info-top-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+        .info-stars { color: #f5a623; font-size: 13px; display: flex; gap: 3px; margin-bottom: 8px; }
+        .info-title { font-size: 26px; font-weight: 800; color: #111; margin-bottom: 10px; line-height: 1.2; }
+        .info-location { font-size: 14px; color: #666; display: flex; align-items: center; gap: 6px; margin-bottom: 14px; }
+        .info-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+        .ib { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .ib-green { background: #e8fdf0; color: #1a7a4a; }
+        .ib-blue  { background: #e6f0ff; color: #0064d2; }
+        .ib-gray  { background: #f0f0f0; color: #555; }
+
+        /* Score Box */
+        .score-box { display: flex; align-items: center; gap: 16px; background: #f8fafc; border-radius: 14px; padding: 16px 20px; margin-top: 18px; }
+        .score-num { font-size: 40px; font-weight: 900; color: #0064d2; line-height: 1; }
+        .score-meta .score-label { font-size: 16px; font-weight: 700; color: #111; }
+        .score-meta .score-sub  { font-size: 13px; color: #888; }
+        .score-bars { flex: 1; }
+        .s-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+        .s-bar-row span { font-size: 12px; color: #666; width: 90px; }
+        .s-bar-track { flex: 1; height: 6px; background: #e8eaed; border-radius: 3px; }
+        .s-bar-fill  { height: 100%; border-radius: 3px; background: #0064d2; }
+
+        /* Amenities */
+        .amenities-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+        .amenity { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #444; }
+        .amenity i { width: 32px; height: 32px; border-radius: 8px; background: #f0f4f8; display: flex; align-items: center; justify-content: center; color: #0064d2; font-size: 14px; }
+        @media (max-width:600px) { .amenities-grid { grid-template-columns: repeat(2,1fr); } }
+
+        /* Description */
+        .desc-text { font-size: 15px; color: #555; line-height: 1.75; margin-top: 14px; }
+        .read-more-btn { background: none; border: none; color: #0064d2; font-size: 14px; font-weight: 600; cursor: pointer; padding: 0; margin-top: 8px; }
+
+        /* Reviews */
+        .review-list { display: flex; flex-direction: column; gap: 18px; margin-top: 16px; }
+        .review-item { border-bottom: 1px solid #f0f0f0; padding-bottom: 18px; }
+        .review-item:last-child { border-bottom: none; }
+        .review-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        .review-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: #e8eaed; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #0064d2; }
+        .review-name { font-size: 14px; font-weight: 700; color: #111; }
+        .review-date { font-size: 12px; color: #aaa; }
+        .review-stars { color: #f5a623; font-size: 12px; margin-bottom: 6px; }
+        .review-text { font-size: 14px; color: #555; line-height: 1.6; }
+        .review-helpful { font-size: 12px; color: #aaa; margin-top: 6px; }
+        .review-helpful button { background: none; border: 1px solid #e8eaed; border-radius: 20px; padding: 3px 10px; font-size: 12px; color: #666; cursor: pointer; margin-left: 6px; }
+
+        /* Map placeholder */
+        .map-block { background: #e8eaed; border-radius: 14px; height: 200px; display: flex; align-items: center; justify-content: center; color: #888; font-size: 15px; flex-direction: column; gap: 8px; margin-top: 14px; }
+        .map-block i { font-size: 32px; color: #0064d2; }
+
+        /* ── RIGHT COLUMN — Booking Card ── */
+        .booking-card { background: #fff; border-radius: 18px; box-shadow: 0 4px 24px rgba(0,0,0,.1); padding: 24px; position: sticky; top: 100px; }
+        .bc-price-row { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 4px; }
+        .bc-old { font-size: 13px; color: #aaa; text-decoration: line-through; }
+        .bc-new { font-size: 28px; font-weight: 900; color: #0064d2; }
+        .bc-unit { font-size: 13px; color: #888; margin-bottom: 16px; }
+        .bc-field { border: 1.5px solid #e8eaed; border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
+        .bc-field label { display: block; font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
+        .bc-field input, .bc-field select { width: 100%; border: none; outline: none; font-size: 14px; font-family: inherit; color: #111; background: none; }
+        .bc-guests { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .bc-total { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-top: 1px solid #f0f0f0; margin-top: 10px; }
+        .bc-total .label { font-size: 14px; color: #555; }
+        .bc-total .value { font-size: 16px; font-weight: 700; color: #111; }
+        .btn-book { width: 100%; padding: 14px; background: #0064d2; color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all .2s; margin-top: 6px; }
+        .btn-book:hover { background: #0052b3; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,100,210,.25); }
+        .bc-note { font-size: 12px; color: #999; text-align: center; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .bc-note i { color: #1a7a4a; }
+        .bc-divider { border: none; border-top: 1px solid #f0f0f0; margin: 14px 0; }
+        .bc-breakdown { display: flex; flex-direction: column; gap: 6px; }
+        .bc-line { display: flex; justify-content: space-between; font-size: 13px; color: #666; }
+        .bc-line.total { font-weight: 700; color: #111; font-size: 14px; margin-top: 4px; }
+
+        /* Share / Save */
+        .action-row { display: flex; gap: 10px; margin-bottom: 18px; }
+        .action-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; border: 1.5px solid #e8eaed; border-radius: 10px; font-size: 13px; font-weight: 600; color: #555; cursor: pointer; transition: all .2s; background: #fff; }
+        .action-btn:hover { border-color: #0064d2; color: #0064d2; }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar scrolled">
+        <div class="container">
+            <a href="{% url 'home' %}" class="navbar-brand" style="color:var(--primary-color);">
+                <i class="fa-solid fa-hotel"></i> Tikety
+            </a>
+            <div class="navbar-menu">
+                <a href="{% url 'hotels' %}">Hotel & Penginapan</a>
+                <a href="{% url 'travel' %}">Travel & Penjemputan</a>
+            </div>
+            <div class="navbar-actions">
+                <button class="btn btn-outline">Masuk</button>
+                <button class="btn btn-primary">Daftar</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Gallery -->
+    <div class="gallery" id="gallery">
+        <div class="gallery-main"><img id="main-img" src="" alt="Main Photo"></div>
+        <div class="gallery-sub"><img id="sub-img-1" src="" alt="Photo 2"></div>
+        <div class="gallery-sub" style="position:relative;">
+            <img id="sub-img-2" src="" alt="Photo 3">
+            <div class="gallery-more" onclick="alert('Tampil semua foto')">+5 Foto</div>
+        </div>
+    </div>
+
+    <!-- Detail Layout -->
+    <div class="detail-layout">
+
+        <!-- LEFT -->
+        <div>
+
+            <!-- === INFO BLOCK === -->
+            <div class="info-block">
+                <div class="info-breadcrumb">
+                    <a href="{% url 'home' %}">Beranda</a> &rsaquo;
+                    <a href="#" id="breadcrumb-cat">Hotel & Penginapan</a> &rsaquo;
+                    <span id="breadcrumb-title">Loading...</span>
+                </div>
+
+                <div class="info-top-row">
+                    <div>
+                        <div class="info-stars" id="info-stars"></div>
+                        <h1 class="info-title" id="info-title">Loading...</h1>
+                        <div class="info-location"><i class="fa-solid fa-location-dot" style="color:#0064d2;"></i> <span id="info-location"></span></div>
+                        <div class="info-badges" id="info-badges"></div>
+                    </div>
+                    <div class="action-row" style="flex-direction:column;width:auto;gap:8px;">
+                        <button class="action-btn" style="width:120px;"><i class="fa-regular fa-heart"></i> Simpan</button>
+                        <button class="action-btn" style="width:120px;"><i class="fa-solid fa-share-nodes"></i> Bagikan</button>
+                    </div>
+                </div>
+
+                <!-- Rating Score Summary -->
+                <div class="score-box">
+                    <div class="score-num" id="score-num">4.8</div>
+                    <div class="score-meta">
+                        <div class="score-label" id="score-label">Excellent</div>
+                        <div class="score-sub" id="score-sub">1.2k ulasan</div>
+                    </div>
+                    <div class="score-bars">
+                        <div class="s-bar-row"><span>Kebersihan</span><div class="s-bar-track"><div class="s-bar-fill" style="width:92%"></div></div></div>
+                        <div class="s-bar-row"><span>Lokasi</span><div class="s-bar-track"><div class="s-bar-fill" style="width:88%"></div></div></div>
+                        <div class="s-bar-row"><span>Layanan</span><div class="s-bar-track"><div class="s-bar-fill" style="width:95%"></div></div></div>
+                        <div class="s-bar-row"><span>Harga</span><div class="s-bar-track"><div class="s-bar-fill" style="width:82%"></div></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === DESCRIPTION === -->
+            <div class="info-block">
+                <h2 style="font-size:18px;font-weight:700;color:#111;margin-bottom:4px;">Tentang Properti Ini</h2>
+                <p class="desc-text" id="desc-text">Memuat deskripsi...</p>
+            </div>
+
+            <!-- === AMENITIES === -->
+            <div class="info-block">
+                <h2 style="font-size:18px;font-weight:700;color:#111;margin-bottom:4px;">Fasilitas Unggulan</h2>
+                <div class="amenities-grid" id="amenities-grid">
+                    <!-- rendered by JS -->
+                </div>
+            </div>
+
+            <!-- === REVIEWS === -->
+            <div class="info-block">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                    <h2 style="font-size:18px;font-weight:700;color:#111;">Ulasan Tamu</h2>
+                    <span style="font-size:13px;color:#0064d2;cursor:pointer;font-weight:600;">Lihat semua</span>
+                </div>
+                <div class="review-list" id="review-list">
+                    <!-- rendered by JS -->
+                </div>
+            </div>
+
+            <!-- === MAP === -->
+            <div class="info-block">
+                <h2 style="font-size:18px;font-weight:700;color:#111;margin-bottom:4px;">Lokasi</h2>
+                <div id="info-map-address" style="font-size:14px;color:#666;margin-bottom:8px;"></div>
+                <div class="map-block">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                    <span>Peta interaktif akan tersedia setelah integrasi Django</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT: Booking Card -->
+        <div>
+            <div class="booking-card">
+                <div class="bc-price-row">
+                    <div>
+                        <div class="bc-old" id="bc-old"></div>
+                        <div class="bc-new" id="bc-new">Rp —</div>
+                    </div>
+                </div>
+                <div class="bc-unit" id="bc-unit">/ malam • termasuk pajak</div>
+
+                <div class="bc-field">
+                    <label>Check-in</label>
+                    <input type="date" id="bc-checkin">
+                </div>
+                <div class="bc-field">
+                    <label>Check-out</label>
+                    <input type="date" id="bc-checkout">
+                </div>
+                <div class="bc-guests">
+                    <div class="bc-field">
+                        <label>Tamu</label>
+                        <select id="bc-guests"><option>1 Tamu</option><option>2 Tamu</option><option>3 Tamu</option><option>4 Tamu</option></select>
+                    </div>
+                    <div class="bc-field">
+                        <label>Kamar</label>
+                        <select id="bc-rooms"><option>1 Kamar</option><option>2 Kamar</option><option>3 Kamar</option></select>
+                    </div>
+                </div>
+
+                <hr class="bc-divider">
+                <div class="bc-breakdown">
+                    <div class="bc-line"><span id="bc-nights-label">1 malam × <span id="bc-rate">Rp —</span></span><span id="bc-nights-total">Rp —</span></div>
+                    <div class="bc-line"><span>Biaya layanan</span><span>Rp 50.000</span></div>
+                    <div class="bc-line"><span>Pajak & biaya</span><span>Rp 30.000</span></div>
+                    <div class="bc-line total"><span>Total</span><span id="bc-grand">Rp —</span></div>
+                </div>
+
+                <button class="btn-book" onclick="alert('Fitur pemesanan akan aktif setelah integrasi Django!')">
+                    <i class="fa-solid fa-calendar-check"></i> Pesan Sekarang
+                </button>
+                <div class="bc-note"><i class="fa-solid fa-shield-halved"></i> Pembayaran aman & terenkripsi</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:32px;margin-bottom:32px;">
+                <div>
+                    <h3 style="color:#fff;font-size:22px;font-weight:800;margin-bottom:12px;"><i class="fa-solid fa-hotel"></i> Tikety</h3>
+                    <p style="color:rgba(255,255,255,.5);font-size:14px;max-width:260px;line-height:1.7;">Pesan Hotel, Villa, dan Travel terbaikmu di satu tempat.</p>
+                </div>
+                <div style="display:flex;gap:48px;flex-wrap:wrap;">
+                    <div><h4 style="color:rgba(255,255,255,.4);font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;">Produk</h4><ul style="list-style:none;"><li style="margin-bottom:8px;"><a href="{% url 'hotels' %}" style="color:rgba(255,255,255,.65);font-size:14px;text-decoration:none;">Hotel & Resort</a></li><li><a href="{% url 'travel' %}" style="color:rgba(255,255,255,.65);font-size:14px;text-decoration:none;">Travel & Sewa Mobil</a></li></ul></div>
+                </div>
+            </div>
+            <div style="border-top:1px solid rgba(255,255,255,.08);padding-top:20px;display:flex;justify-content:space-between;align-items:center;">
+                <span style="color:rgba(255,255,255,.35);font-size:13px;">© 2026 Tikety.com. All rights reserved.</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ── Parse Django Context ──
+        const product = {
+            title: "{{ hotel.name|escapejs }}",
+            location: "{{ hotel.location|escapejs }}",
+            rating: "{{ hotel.rating_score|escapejs }}",
+            ratingText: "{{ hotel.rating_text|escapejs }}",
+            reviews: "{{ hotel.review_count|escapejs }} ulasan",
+            oldPrice: {% if hotel.old_price %}"Rp {{ hotel.old_price|escapejs }}"{% else %}null{% endif %},
+            newPrice: "Rp {{ hotel.new_price|escapejs }}",
+            badge: {% if hotel.badge %}"{{ hotel.badge|escapejs }}"{% else %}null{% endif %},
+            image: {% if hotel.image %}"{{ hotel.image.url|escapejs }}"{% elif hotel.category == 'villa' %}"https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"{% elif hotel.category == 'camping' %}"https://images.unsplash.com/photo-1504280387797-e8185c8e415b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"{% else %}"https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"{% endif %},
+            unit: "malam",
+            stars: Math.floor({{ hotel.rating_score|default:"0" }})
+        };
+        const cat = "{{ hotel.category|escapejs }}" || 'hotels';
+
+        // ── Fake extra images (sub-photos) ──
+        const EXTRA_PHOTOS = [
+            'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1596436889106-be35e843f974?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+        ];
+
+        // ── Descriptions per category ──
+        const DESCS = {
+            hotels: `Nikmati pengalaman menginap yang tak terlupakan di properti bintang 5 kami yang telah berdiri selama lebih dari dua dekade. Kamar-kamar kami dirancang dengan sentuhan modern dan material premium, dilengkapi kasur super mewah, pencahayaan ambient, dan pemandangan kota yang menakjubkan dari ketinggian lantai atas. Tim kami siap melayani Anda 24 jam sehari, 7 hari seminggu, memastikan setiap keinginan Anda terpenuhi. Tersedia restoran rooftop dengan pemandangan panorama, spa kelas dunia, dan pusat kebugaran berteknologi tinggi.`,
+            villa: `Bersembunyi di antara hamparan sawah hijau dan hutan tropis yang asri, villa private kami menawarkan pengalaman staycation yang sesungguhnya. Setiap unit memiliki kolam renang private, dek kayu yang menghadap ke alam terbuka, serta dapur lengkap bagi Anda yang ingin memasak. Layanan butler tersedia sepanjang waktu untuk memastikan kenyamanan Anda. Tanpa tetangga lain, tanpa kebisingan — hanya ketenangan yang Anda butuhkan.`,
+            camping: `Spot camping terbaik kami menawarkan perpaduan terbang ke alam bebas dan fasilitas yang cukup. Berlokasi di alam terbuka yang asri dengan akses mudah. Fasilitas api unggun dan area BBQ tersedia. Cocok untuk petualang muda maupun keluarga yang ingin menyatu dengan alam.`,
+            travel: `Layanan shuttle premium kami beroperasi setiap hari dengan armada kendaraan terbaru berusia di bawah 2 tahun. Supir profesional berpengalaman, berseragam, dan tepat waktu. Tersedia WiFi on-board, minuman dingin, dan kursi reclining yang nyaman. Check-in online tersedia 30 menit sebelum keberangkatan. Kami menjamin ketepatan waktu, atau uang kembali penuh.`,
+            mobil: `Jelajahi destinasi impianmu dengan armada mobil premium terbaik kami. Seluruh kendaraan dalam kondisi prima, perawatan rutin, dan dilengkapi GPS tracker untuk keamanan Anda. Driver berpengalaman tersedia jika diperlukan, atau Anda bisa self-drive dengan SIM yang valid. Termasuk asuransi dasar dan bebas klaim rayap. Booking minimal 1 hari dengan pengiriman ke lokasi Anda.`,
+        };
+
+        // ── Amenities per category ──
+        const AMENITIES = {
+            hotels: [
+                { icon: 'fa-wifi', label: 'WiFi Gratis' }, { icon: 'fa-person-swimming', label: 'Kolam Renang' },
+                { icon: 'fa-square-parking', label: 'Parkir Gratis' }, { icon: 'fa-spa', label: 'Spa & Sauna' },
+                { icon: 'fa-dumbbell', label: 'Gym & Fitness' }, { icon: 'fa-utensils', label: 'Restoran' },
+                { icon: 'fa-mug-saucer', label: 'Sarapan Inc.' }, { icon: 'fa-snowflake', label: 'AC' },
+                { icon: 'fa-tv', label: 'Smart TV 65"' },
+            ],
+            villa: [
+                { icon: 'fa-person-swimming', label: 'Private Pool' }, { icon: 'fa-wifi', label: 'WiFi Cepat' },
+                { icon: 'fa-kitchen-set', label: 'Dapur Lengkap' }, { icon: 'fa-square-parking', label: 'Parkir Luas' },
+                { icon: 'fa-tree', label: 'Taman Tropis' }, { icon: 'fa-fire', label: 'BBQ Area' },
+                { icon: 'fa-baby', label: 'Baby Friendly' }, { icon: 'fa-cat', label: 'Pet Friendly' },
+                { icon: 'fa-shield', label: 'Security 24 Jam' },
+            ],
+            guesthouse: [
+                { icon: 'fa-wifi', label: 'WiFi Gratis' }, { icon: 'fa-mug-saucer', label: 'Sarapan Inc.' },
+                { icon: 'fa-square-parking', label: 'Parkir' }, { icon: 'fa-snowflake', label: 'AC' },
+                { icon: 'fa-tv', label: 'Televisi' }, { icon: 'fa-soap', label: 'Kamar Mandi Dlm' },
+            ],
+            travel: [
+                { icon: 'fa-snowflake', label: 'Full AC' }, { icon: 'fa-wifi', label: 'WiFi On-board' },
+                { icon: 'fa-chair', label: 'Kursi Reclining' }, { icon: 'fa-cookie', label: 'Snack Gratis' },
+                { icon: 'fa-location-dot', label: 'Door to Door' }, { icon: 'fa-headset', label: 'CS 24 Jam' },
+            ],
+            mobil: [
+                { icon: 'fa-snowflake', label: 'Full AC' }, { icon: 'fa-gas-pump', label: 'BBM Sendiri' },
+                { icon: 'fa-route', label: 'Bebas Rute' }, { icon: 'fa-shield', label: 'Asuransi Dasar' },
+                { icon: 'fa-location-dot', label: 'Antar ke Lokasi' }, { icon: 'fa-id-card', label: 'SIM Wajib' },
+            ],
+        };
+
+        // ── Mock Reviews ──
+        const REVIEWS = [
+            { name: 'Arief Setiawan', date: 'Juni 2026', avatar: 'A', score: 5, text: 'Luar biasa! Pelayanannya sangat ramah dan profesional. Kamarnya bersih, luas, dan view-nya bikin nagih. Pasti balik lagi!', helpful: 24 },
+            { name: 'Rina Widyawati', date: 'Mei 2026', avatar: 'R', score: 4, text: 'Lokasi sangat strategis, dekat dengan pusat perbelanjaan dan transportasi umum. Sarapan enak dan variatif. Hanya saja parkir agak terbatas di akhir pekan.', helpful: 18 },
+            { name: 'Budi Santoso', date: 'April 2026', avatar: 'B', score: 5, text: 'Pengalaman menginap terbaik yang pernah saya rasakan! Staf sangat helpful, fasilitas lengkap, dan harga sangat sesuai dengan kualitasnya.', helpful: 31 },
+        ];
+
+        // ── Render ──
+        if (product) {
+            document.title = `${product.title} — Tikety`;
+
+            // Gallery
+            document.getElementById('main-img').src = product.image;
+            document.getElementById('main-img').alt = product.title;
+            document.getElementById('sub-img-1').src = EXTRA_PHOTOS[0];
+            document.getElementById('sub-img-2').src = EXTRA_PHOTOS[1];
+
+            // Breadcrumb
+            const catName = {hotels:'Hotel & Penginapan', villa:'Villa & Resort', camping:'Camping', travel:'Travel Jemput', mobil:'Sewa Mobil'};
+            const catHref = {hotels:'hotels.html', villa:'hotels.html', camping:'hotels.html', travel:'travel.html', mobil:'travel.html'};
+            document.getElementById('breadcrumb-cat').textContent = catName[cat];
+            document.getElementById('breadcrumb-cat').href = catHref[cat];
+            document.getElementById('breadcrumb-title').textContent = product.title;
+
+            // Stars
+            document.getElementById('info-stars').innerHTML = '<i class="fa-solid fa-star"></i>'.repeat(product.stars);
+
+            // Title, location
+            document.getElementById('info-title').textContent = product.title;
+            document.getElementById('info-location').textContent = product.location;
+
+            // Badges
+            const badges = product.badge ? [`<span class="ib ib-blue">${product.badge}</span>`] : [];
+            badges.push(`<span class="ib ib-green"><i class="fa-solid fa-check"></i> Tersedia</span>`);
+            badges.push(`<span class="ib ib-gray">Cancellation Gratis</span>`);
+            document.getElementById('info-badges').innerHTML = badges.join('');
+
+            // Score
+            const ratingNum = parseFloat(product.rating);
+            document.getElementById('score-num').textContent = ratingNum;
+            document.getElementById('score-label').textContent = product.ratingText;
+            document.getElementById('score-sub').textContent = product.reviews;
+
+            // Description
+            document.getElementById('desc-text').textContent = DESCS[cat] || DESCS.hotels;
+            document.getElementById('info-map-address').textContent = product.location;
+
+            // Amenities
+            const amenList = AMENITIES[cat] || AMENITIES.hotels;
+            document.getElementById('amenities-grid').innerHTML = amenList.map(a =>
+                `<div class="amenity"><i class="fa-solid ${a.icon}"></i> ${a.label}</div>`
+            ).join('');
+
+            // Reviews
+            document.getElementById('review-list').innerHTML = REVIEWS.map(r =>
+                `<div class="review-item">
+                    <div class="review-header">
+                        <div class="review-avatar">${r.avatar}</div>
+                        <div><div class="review-name">${r.name}</div><div class="review-date">${r.date}</div></div>
+                    </div>
+                    <div class="review-stars">${'<i class="fa-solid fa-star"></i>'.repeat(r.score)}</div>
+                    <div class="review-text">${r.text}</div>
+                    <div class="review-helpful">Membantu? <button>👍 ${r.helpful}</button></div>
+                </div>`
+            ).join('');
+
+            // Booking card
+            if (product.oldPrice) document.getElementById('bc-old').textContent = product.oldPrice;
+            document.getElementById('bc-new').textContent = product.newPrice;
+            document.getElementById('bc-unit').textContent = `/ ${product.unit} • termasuk pajak`;
+
+            // Set default dates
+            const today = new Date();
+            const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+            const fmt = d => d.toISOString().split('T')[0];
+            document.getElementById('bc-checkin').value = fmt(today);
+            document.getElementById('bc-checkout').value = fmt(tomorrow);
+
+            // Price breakdown calc
+            const priceNumStr = product.newPrice.replace(/[^\d]/g, '');
+            const priceNum = parseInt(priceNumStr) || 0;
+            const updateBreakdown = () => {
+                const ci = new Date(document.getElementById('bc-checkin').value);
+                const co = new Date(document.getElementById('bc-checkout').value);
+                const nights = Math.max(1, Math.round((co - ci) / 86400000));
+                const sub = priceNum * nights;
+                const total = sub + 50000 + 30000;
+                const label = cat === 'mobil' ? `${nights} hari` : `${nights} malam`;
+                document.getElementById('bc-nights-label').innerHTML = `${label} × <span id="bc-rate">${product.newPrice}</span>`;
+                document.getElementById('bc-nights-total').textContent = `Rp ${sub.toLocaleString('id-ID')}`;
+                document.getElementById('bc-grand').textContent = `Rp ${total.toLocaleString('id-ID')}`;
+            };
+            document.getElementById('bc-checkin').addEventListener('change', updateBreakdown);
+            document.getElementById('bc-checkout').addEventListener('change', updateBreakdown);
+            updateBreakdown();
+
+            // Hide irrelevant guest fields for travel/car
+            if (cat === 'travel' || cat === 'mobil') {
+                document.getElementById('bc-guests').closest('.bc-guests').style.display = 'none';
+                document.getElementById('bc-checkin').closest('.bc-field').querySelector('label').textContent = 'Tanggal Berangkat';
+                document.getElementById('bc-checkout').closest('.bc-field').querySelector('label').textContent = 'Tanggal Kembali';
+                document.querySelector('.btn-book').innerHTML = '<i class="fa-solid fa-calendar-check"></i> Pesan Sekarang';
+            }
+
+        } else {
+            document.getElementById('info-title').textContent = 'Properti tidak ditemukan';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+.footer {
+  background: var(--color-primary-dark);
+  color: var(--color-white);
+  padding-block: 34px;
+}
+
+.footer__inner {
+  align-items: center;
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+}
+
+.footer strong {
+  display: block;
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+}
+
+.footer p,
+.footer a {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.footer a {
+  font-weight: 800;
+  transition: color var(--transition);
+}
+
+.footer a:hover {
+  color: var(--color-white);
+}

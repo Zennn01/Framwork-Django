@@ -1,0 +1,26 @@
+@import url("https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:wght@400;500;600;700;800;900&display=swap");
+
+:root {
+  --color-primary: #1e3a5f;
+  --color-primary-dark: #10233d;
+  --color-secondary: #2563eb;
+  --color-accent: #a16207;
+  --color-accent-soft: #f8ead2;
+  --color-ink: #0f172a;
+  --color-muted: #64748b;
+  --color-soft: #f8fafc;
+  --color-surface: #ffffff;
+  --color-line: #d8e0ea;
+  --color-white: #ffffff;
+  --color-success: #0f766e;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --shadow-sm: 0 12px 30px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 24px 70px rgba(15, 23, 42, 0.16);
+  --shadow-dark: 0 30px 90px rgba(16, 35, 61, 0.34);
+  --container: 1180px;
+  --space-section: 92px;
+  --transition: 220ms ease;
+}

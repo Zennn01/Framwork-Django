@@ -1,0 +1,114 @@
+.hero {
+    margin-top: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.25)), url('https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80');
+    background-size: cover;
+    background-position: center;
+    padding: 180px 0 120px;
+    color: var(--bg-white);
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+}
+
+.hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    background: linear-gradient(to top, var(--bg-light), transparent);
+}
+
+.hero .container {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-title {
+    font-size: 48px;
+    font-weight: 800;
+    margin-bottom: var(--space-md);
+    line-height: 1.2;
+    letter-spacing: -1px;
+}
+
+.hero-subtitle {
+    font-size: 20px;
+    opacity: 0.9;
+    margin-bottom: var(--space-2xl);
+    font-weight: 400;
+}
+
+.search-widget {
+    background: var(--bg-white);
+    padding: var(--space-md);
+    border-radius: var(--radius-xl);
+    max-width: 900px;
+    margin: 0 auto;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.search-form {
+    display: none;
+    width: 100%;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.search-form.active {
+    display: flex;
+}
+
+.search-fields-container {
+    display: flex;
+    flex: 1;
+    gap: var(--space-sm);
+}
+
+.search-field {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
+    padding: var(--space-sm) var(--space-md);
+    border-right: 1px solid var(--border-color);
+    position: relative;
+    cursor: text;
+}
+
+.search-fields-container .search-field:last-child {
+    border-right: none;
+}
+
+.search-field label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.search-field input {
+    border: none;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    width: 100%;
+    outline: none;
+    background: transparent;
+}
+
+.search-field input::placeholder {
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+.search-form .btn-primary {
+    padding: 0 var(--space-xl);
+    height: 56px;
+    font-size: 16px;
+    border-radius: var(--radius-lg);
+}

@@ -1,0 +1,48 @@
+.slider-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.icon-btn {
+  align-items: center;
+  background: var(--color-white);
+  border: 1px solid var(--color-line);
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+  color: var(--color-primary);
+  display: inline-flex;
+  font-size: 1.1rem;
+  font-weight: 900;
+  height: 42px;
+  justify-content: center;
+  width: 42px;
+}
+
+.slider-track {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding: 4px 2px 24px;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.slider-track::-webkit-scrollbar {
+  display: none;
+}
+
+.slider-track > * {
+  scroll-snap-align: start;
+}
+
+.slider-track.is-dragging {
+  cursor: grabbing;
+  scroll-behavior: auto;
+  scroll-snap-type: none;
+}
+
+.hotel-track {
+  --visible: 5;
+}
